@@ -16,9 +16,9 @@ void Port_Init(void)
 	P1IFG = 0;//clear interrupt flag
 	P1IE |= ALL_BUTTONS;//Interrupt enabled
 
-	P3SEL &= ~(BCD_ALL);
+	P3SEL &= ~(BCD_ALL);//Pins for the BCD decoder
 	P3DIR |= (BCD_ALL);//output direction
-	P3OUT |= (BCD_ALL);
+	P3OUT |= (BCD_ALL);//Set all output to 1 and the display will show nothing.
 	button.all_flags = 0;
 }
 
@@ -27,12 +27,12 @@ void Port_Init(void)
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1(void)
 {
-	uint8_t int_enable = 0;
-	button.all_flags = 0;
+	uint8_t int_enable = 0;//Used to save interrupt states.
+	button.all_flags = 0;//clear all flags
 	if((P1IFG & ALL_BUTTONS) != 0){
         // Disable PORT1 IRQ
 	    __bic_SR_register(GIE);       // disable global interrupt
-	    int_enable = P1IE;
+	    int_enable = P1IE;//save current interrupt setting
         P1IE = 0x00;
         __bis_SR_register(GIE);       // enable global interrupt
 //        TimerA0_CCR2_Delay(5);	//delay for 5ms
@@ -43,22 +43,22 @@ __interrupt void Port_1(void)
     		button.flag.minute = 1;
     	}
     }
-    if(IRQ_TRIGGERED(P1IFG,BUTTON_SECOND)){//Button minute pressed
+    if(IRQ_TRIGGERED(P1IFG,BUTTON_SECOND)){//Button second pressed
     	if(BUTTON_SECOND_IS_PRESSED){
     		button.flag.second = 1;
     	}
     }
-    if(IRQ_TRIGGERED(P1IFG,BUTTON_TIMER_ONOFF)){//Button minute pressed
+    if(IRQ_TRIGGERED(P1IFG,BUTTON_TIMER_ONOFF)){//Button timer on/off pressed
     	if(BUTTON_TIMER_ONOFF_IS_PRESSED){
     		button.flag.timer = 1;
     	}
     }
-    if(IRQ_TRIGGERED(P1IFG,BUTTON_RTC)){//Button minute pressed
+    if(IRQ_TRIGGERED(P1IFG,BUTTON_RTC)){//Button RTC pressed
     	if(BUTTON_RTC_IS_PRESSED){
     		button.flag.rtc = 1;
     	}
     }
-    if(IRQ_TRIGGERED(P1IFG,BUTTON_HUMIDITY)){//Button minute pressed
+    if(IRQ_TRIGGERED(P1IFG,BUTTON_HUMIDITY)){//Button humidity pressed
     	if(BUTTON_HUMIDITY_IS_PRESSED){
     		button.flag.hum = 1;
     	}
@@ -66,6 +66,6 @@ __interrupt void Port_1(void)
     // Reenable PORT2 IRQ
     __bic_SR_register(GIE);       // disable global interrupt
     P1IFG = 0x00;
-    P1IE = int_enable;
+    P1IE = int_enable;//Restore all interrupt
     __bis_SR_register(GIE);       // enable global interrupt
 }
