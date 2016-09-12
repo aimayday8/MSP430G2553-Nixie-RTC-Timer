@@ -2,8 +2,8 @@
 #include"stdint.h"
 #include"Display.h"
 
-void display(uint8_t second, uint8_t minute, uint8_t high_bit);
-void display_off(void);
+void display(uint8_t second, uint8_t minute, uint8_t high_bit);//display either the RTC time of timer time
+void display_off(void);//turn off all 4 digits
 
 void display(uint8_t second, uint8_t minute, uint8_t high_bit)
 {
